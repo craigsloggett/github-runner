@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>Label</key>
+    <string>{{SvcName}}</string>
+
+    <!--
+      Not runsvc.sh. The runner rewrites ./runsvc.sh from ./bin/runsvc.sh on
+      every self-update (_work/_update.sh), and `svc.sh install` re-copies it,
+      so environment changes made there are destroyed; see actions/runner#4177.
+      provisioning/runner-service.sh is touched by neither, and it execs
+      runsvc.sh by absolute path so the updater's `ps ... | grep` still matches.
+    -->
+    <key>ProgramArguments</key>
+    <array>
+      <string>{{RunnerRoot}}/provisioning/runner-service.sh</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>{{RunnerRoot}}</string>
+
+    <!--
+      Interactive is the unthrottled class (man 5 launchd.plist). Do not change
+      this to Background: it applies CPU and I/O throttling that would visibly
+      slow a thirty-minute Xcode build.
+    -->
+    <key>ProcessType</key>
+    <string>Interactive</string>
+
+    <!--
+      False on purpose. True spawns the job into a NEW security audit session.
+      Upstream added true in actions/runner#847 because that was what made the
+      login keychain reachable on macOS 11; on macOS 15 and 26 the reported
+      behaviour is the opposite (actions/runner#3407), and the whole reason this
+      runner stays a user-owned LaunchAgent is parity with the interactive
+      ./run.sh that reaches the login keychain today. hark's test bundle is
+      app-hosted, so `make test` needs the same Aqua session that signing does.
+
+      Run `make probe-keychain` before changing this.
+    -->
+    <key>SessionCreate</key>
+    <false/>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <!--
+      Not <true/>. RunnerService.js stops deliberately on listener exit codes 0
+      (deregistered), 1 (terminated) and 5 (session conflict), and after
+      repeated retryable failures. KeepAlive=true would defeat every one of
+      those; on code 5 it would turn a stray second listener into an endless
+      fight over the same registration. SuccessfulExit=false restarts only
+      abnormal deaths and leaves those circuit breakers intact.
+    -->
+    <key>KeepAlive</key>
+    <dict>
+      <key>SuccessfulExit</key>
+      <false/>
+    </dict>
+
+    <key>ThrottleInterval</key>
+    <integer>30</integer>
+
+    <!-- Rotated by provisioning/maintenance.sh; nothing upstream rotates them. -->
+    <key>StandardOutPath</key>
+    <string>{{UserHome}}/Library/Logs/{{SvcName}}/stdout.log</string>
+    <key>StandardErrorPath</key>
+    <string>{{UserHome}}/Library/Logs/{{SvcName}}/stderr.log</string>
+
+    <!--
+      ACTIONS_RUNNER_SVC is the only variable the runner itself looks for here.
+      Every other environment decision lives in runner-service.sh so there is
+      exactly one file to read, and because a plist dict can only overwrite a
+      variable, never unset one.
+    -->
+    <key>EnvironmentVariables</key>
+    <dict>
+      <key>ACTIONS_RUNNER_SVC</key>
+      <string>1</string>
+    </dict>
+  </dict>
+</plist>
