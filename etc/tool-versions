@@ -1,0 +1,18 @@
+# Homebrew formulae the workflows rely on, and the versions this runner was last
+# known good with. hooks/job-started.sh warns (never fails) on drift, so a
+# formula bump surfaces in the job log instead of silently changing a build.
+#
+# Refresh with `make record-versions` after a deliberate upgrade.
+#
+# Note xcodegen: hark's Scripts/install-xcodegen.sh downloads its own pinned
+# release into RUNNER_TEMP and prepends it to PATH, so the Homebrew copy is not
+# what the build uses. It is tracked here only to make the divergence visible.
+
+xcodegen 2.46.0
+swiftformat 0.62.1
+swiftlint 0.65.0
+shfmt 3.13.1
+shellcheck 0.11.0
+yamllint 1.38.0
+actionlint 1.7.12
+gh 2.96.0

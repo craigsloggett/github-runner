@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>Label</key>
+    <string>{{SvcName}}.maintenance</string>
+
+    <key>ProgramArguments</key>
+    <array>
+      <string>{{RunnerRoot}}/provisioning/maintenance.sh</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>{{RunnerRoot}}</string>
+
+    <!--
+      Daily rather than on an interval: launchd fires a missed calendar job on
+      the next wake, which suits a laptop that sleeps. maintenance.sh refuses to
+      run while a job is in flight, so the exact time only needs to be unlikely
+      to collide, not guaranteed idle.
+    -->
+    <key>StartCalendarInterval</key>
+    <dict>
+      <key>Hour</key>
+      <integer>4</integer>
+      <key>Minute</key>
+      <integer>30</integer>
+    </dict>
+
+    <!-- Explicitly false: this must not run at load, only on schedule. -->
+    <key>RunAtLoad</key>
+    <false/>
+
+    <key>StandardOutPath</key>
+    <string>{{UserHome}}/Library/Logs/{{SvcName}}/maintenance.log</string>
+    <key>StandardErrorPath</key>
+    <string>{{UserHome}}/Library/Logs/{{SvcName}}/maintenance.log</string>
+  </dict>
+</plist>

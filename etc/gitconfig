@@ -1,0 +1,26 @@
+# Selected by GIT_CONFIG_GLOBAL in runner-service.sh, which replaces both
+# ~/.gitconfig and ~/.config/git/config. The real config on the host is the XDG
+# one, a symlink into a live dotfiles checkout, and it sets commit.gpgSign and
+# user.signingKey; without this override every `git commit` in a job would try
+# to reach the user's GPG agent.
+
+[user]
+	name = github-runner
+	email = github-runner@users.noreply.github.com
+
+[commit]
+	gpgSign = false
+
+[tag]
+	gpgSign = false
+
+# Repacking a persistent 33 MB checkout mid-job buys nothing and can stall a
+# build; maintenance.sh owns disk, not git.
+[gc]
+	auto = 0
+
+[core]
+	fsmonitor = false
+
+[advice]
+	detachedHead = false
