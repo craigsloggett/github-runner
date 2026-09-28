@@ -24,9 +24,9 @@ provisioning_dir="$(cd -P "$(dirname "$0")" && pwd)"
 # Pinned so a fresh machine gets a known artifact rather than whatever "latest"
 # resolves to. The runner self-updates on first contact regardless, so this
 # pins the starting point, not the running version.
-RUNNER_VERSION="2.336.0"
+RUNNER_VERSION="2.337.0"
 RUNNER_ARCH="osx-arm64"
-RUNNER_SHA256="8e8839c49b7060b6b2154f4931f815df330c27f167d53ef2239ee3dfce28b079"
+RUNNER_SHA256="5a2cd92908a93d7276a194e1de6008099f3e7946f3f8e14aa7a1a7b4a31fdec2"
 
 RUNNER_TARBALL="actions-runner-${RUNNER_ARCH}-${RUNNER_VERSION}.tar.gz"
 RUNNER_URL="https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/${RUNNER_TARBALL}"
