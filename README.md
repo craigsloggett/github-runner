@@ -81,7 +81,7 @@ Never leave `./run.sh` running in a terminal while the service is loaded. Two li
 
 ## Runner Version
 
-The runner self-updates. Two open regressions affect macOS on 2.336.0, [#4570](https://github.com/actions/runner/issues/4570) and [#4575](https://github.com/actions/runner/issues/4575), where `Runner.Worker` wedges at 100% CPU while the listener stays healthy. Neither `KeepAlive` nor the job hooks help, which is why `maintenance.sh` reaps workers that outlive `WORKER_REAP_MINUTES`.
+The runner self-updates. Two open regressions affect macOS since 2.336.0, [#4570](https://github.com/actions/runner/issues/4570) and [#4575](https://github.com/actions/runner/issues/4575), where `Runner.Worker` wedges at 100% CPU while the listener stays healthy. Both are still unfixed in 2.337.0. Neither `KeepAlive` nor the job hooks help, which is why `maintenance.sh` reaps workers that outlive `WORKER_REAP_MINUTES`.
 
 `maintenance.sh` keeps the most recently superseded `bin.*` and `externals.*` pair as the rollback for a bad self-update, and never touches the downloaded release tarball, which is the other way back to a known version. `config.sh --disableupdate` pins the version, but treat it as a temporary escape hatch: GitHub stops assigning jobs to runners that fall too far behind.
 
